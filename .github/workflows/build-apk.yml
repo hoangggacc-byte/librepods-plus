@@ -7,22 +7,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Clone original LibrePods
+      
+      - name: Get original LibrePods
         run: |
-          git clone https://github.com/librepods-org/librepods original
-          cp -r original/android ./android
+          git clone https://github.com/librepods-org/librepods.git /tmp/librepods
+          rm -rf android
+          cp -r /tmp/librepods/android ./android
+          echo "Copied android folder"
+      
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
+      
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
